@@ -20,6 +20,7 @@ public class CSVPrinter implements OutputPrinter {
     private List<Sentence> sentenceList = new ArrayList<Sentence>();
     private Integer totalNrOfSentences= 0;
     private Integer totalNrOfWords = 0;
+    private Integer currentPrintedSentenceIndex = 1;
     private OptionalInt maxNrOfWords = OptionalInt.empty();
     private final int FLUSH_LIMIT = 100;
     private boolean printHasStarted;
@@ -28,6 +29,7 @@ public class CSVPrinter implements OutputPrinter {
     private final String CSV_OUTPUTFILE_HEADER = "CSV_Output_header.csv";
     private final String CSV_OUTPUTFILE = "CSV_Output.csv";
     private FileWriter outputfile = null;
+    private boolean isflushDone = false;
 
     @Override
     public void addSentenceAndFlush(Sentence sentence) {
@@ -90,20 +92,19 @@ public class CSVPrinter implements OutputPrinter {
     }
 
     private void addRowRecords(CSVWriter csvWriter, List<String[]> rows ) {
-
         ListIterator<Sentence> sentenceListIterator = sentenceList.listIterator();
-        int count = getTotalNrOfSentences();
+
         while (sentenceListIterator.hasNext()) {
             Sentence sentenceTmp = sentenceListIterator.next();
             List<String> tmpRec = new ArrayList<>();
             StringBuffer recBuf = new StringBuffer();
-            recBuf.append("Sentence ").append(count);
+            recBuf.append("Sentence ").append(currentPrintedSentenceIndex);
             tmpRec.add(recBuf.toString());
             sentenceTmp.getWords().stream().forEach(word -> tmpRec.add(word.getValue()));
             rows.add(tmpRec.stream().toArray(String[]::new));
             //Remove it after it has been printed out
             sentenceListIterator.remove();
-            count++;
+            currentPrintedSentenceIndex++;
         }
     }
 

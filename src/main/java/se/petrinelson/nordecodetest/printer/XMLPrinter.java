@@ -12,7 +12,6 @@ import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class XMLPrinter implements OutputPrinter {
     private static final Logger LOGGER = LogManager.getLogger(XMLPrinter.class);
@@ -22,8 +21,7 @@ public class XMLPrinter implements OutputPrinter {
     private Integer totalNrOfSentences= 0;
     private Integer totalNrOfWords = 0;
     private static  int FLUSH_LIMIT = 10000;
-    //When printHasStarted= 1 the first XML sections has been printed
-    private AtomicInteger printHasStarted = new AtomicInteger();
+    private boolean printHasStarted;
     private XMLOutputFactory factory = XMLOutputFactory.newInstance();
     private ByteArrayOutputStream out = null;
     private XMLStreamWriter writer = null;
@@ -68,8 +66,8 @@ public class XMLPrinter implements OutputPrinter {
             }
         }
         //Activate only once when start output stream
-        if(printHasStarted.get() == 0 ){
-            printHasStarted.set(1);
+        if(!printHasStarted){
+            printHasStarted = true;
             out = new ByteArrayOutputStream();
             writer = factory.createXMLStreamWriter(out, ENCODING );
             printHeaderElement(writer);
